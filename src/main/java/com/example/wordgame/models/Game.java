@@ -19,7 +19,7 @@ public class Game { // Partida
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String word; // Preguntar Nico
+    private String word;
     private int score;
     private int n_try;
     private Date datetime;
