@@ -11,14 +11,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Builder
-@Table(name = "wordle")
-public class Wordle {
-
+@Table(name = "word_game_type")
+class WordGameType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String difficulty_j;
-    private String description;
-    private int max_tries; // Máximos intentos
+    private String wordDifficulty;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "word_id")
+    private Word word;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "game_type_id")
+    private GameType gameType;
 }

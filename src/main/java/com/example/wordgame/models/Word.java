@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,4 +21,6 @@ public class Word {
     private Long id;
     private String word;
 
+    @OneToMany(mappedBy = "word")
+    private List<WordGameType> wordGameTypes;
 }

@@ -6,29 +6,26 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Builder
-@Table(name = "game")
-public class Game { // Partida
+@Table(name = "game_type")
+public class GameType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String word;
-    private int score;
-    private int nTry;
-    private Date datetime;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "player_id")
-    private Player player;
+    private String difficultyG;
+    private String description;
+    private int maxTries; // Máximos intentos
 
     @OneToOne
-    private GameType gameType;
+    private Game game;
 
+    @OneToMany(mappedBy = "gameType")
+    private List<WordGameType> wordGameTypes;
 }
