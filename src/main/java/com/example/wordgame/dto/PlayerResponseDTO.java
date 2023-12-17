@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PlayerResponseDTO {
 
+    private Long id;
     private String user;
     private String img;
     private TeamInfoDTO teamInfo;

@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Builder
 @Table(name = "word_game_type")
-class WordGameType {
+public class WordGameType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

@@ -9,8 +9,9 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class WordListDto {
+public class WordListDTO {
 
     private List<String> words;
+    private Integer nextPage;
 
 }

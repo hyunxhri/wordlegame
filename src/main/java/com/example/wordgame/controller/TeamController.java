@@ -1,14 +1,17 @@
 package com.example.wordgame.controller;
 
-import com.example.wordgame.dto.*;
-import com.example.wordgame.models.Player;
+import com.example.wordgame.controller.mapper.TeamMapper;
+import com.example.wordgame.dto.CreateTeamDTO;
+import com.example.wordgame.dto.TeamListDTO;
+import com.example.wordgame.dto.TeamResponseDTO;
+import com.example.wordgame.dto.UpdateTeamDTO;
+import com.example.wordgame.exception.TeamNotFoundException;
 import com.example.wordgame.models.Team;
-import com.example.wordgame.repository.TeamRepository;
+import com.example.wordgame.service.TeamService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,70 +20,46 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 public class TeamController {
 
-    private final TeamRepository teamRepository;
+    private final TeamService teamService;
+    private final TeamMapper teamMapper;
 
-    public TeamController(TeamRepository teamRepository) {
-        this.teamRepository = teamRepository;
+    public TeamController(TeamService teamService, TeamMapper teamMapper) {
+        this.teamService = teamService;
+        this.teamMapper = teamMapper;
     }
 
     @GetMapping("/teams")
     public TeamListDTO getTeams(@RequestParam(defaultValue = "0") int page,
                                 @RequestParam(defaultValue = "100") int size) {
+
         Pageable pageRequest = PageRequest.of(page, size);
-        Page<Team> teamPage = teamRepository.findAll(pageRequest);
-        TeamListDTO response = new TeamListDTO();
-        response.setTeamList(teamPage.getContent());
-        if (teamPage.hasNext()) {
-            response.setNextPage(teamPage.nextPageable().getPageNumber());
-        }
-        return response;
+        Page<Team> teamPage = teamService.getTeams(pageRequest);
+        return teamMapper.toTeamListDTO(teamPage);
+
     }
 
     @GetMapping("/teams/{id}")
-    public Team getTeamById(@PathVariable Long id) {
-        return teamRepository.findById(id).orElseThrow(() ->
-                new ResourceNotFoundException("Team not found with id " + id));
+    public TeamResponseDTO getTeamById(@PathVariable Long id) throws TeamNotFoundException {
+        return teamMapper.toTeamResponseDTO(teamService.getTeam(id));
     }
 
     @PostMapping("/teams")
-    public ResponseEntity<?> createTeam(@RequestBody CreateTeamDTO teamDTO) {
-        Team team = new Team();
-        team.setName(teamDTO.getName());
-        team.setBadge(teamDTO.getBadge());
-        Team teamCreated = teamRepository.save(team);
-        return new ResponseEntity<>(teamCreated, HttpStatus.CREATED);
+    public ResponseEntity<TeamResponseDTO> createTeam(@RequestBody CreateTeamDTO teamDTO) {
+
+        Team team = teamService.createTeam(teamDTO.getName(), teamDTO.getBadge());
+        return new ResponseEntity<>(teamMapper.toTeamResponseDTO(team), HttpStatus.CREATED);
+
     }
 
     @DeleteMapping("/teams/{id}")
-    public ResponseEntity<?> deleteTeam(@PathVariable Long id) {
-        return teamRepository.findById(id)
-                .map(team -> {
-                    teamRepository.delete(team);
-                    return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-                })
-                .orElseThrow(() -> new ResourceNotFoundException("Team not found with id " + id));
+    public void deleteTeam(@PathVariable Long id) throws TeamNotFoundException {
+        teamService.deleteTeam(id);
     }
 
     @PutMapping("/teams/{id}")
     public TeamResponseDTO updateTeam(@PathVariable Long id, @Valid @RequestBody UpdateTeamDTO teamDTO) {
-        Team team = new Team();
-        team.setId(id);
-        team.setName(teamDTO.getName());
-        team.setBadge(teamDTO.getBadge());
-        team = teamRepository.save(team);
-        TeamResponseDTO response = new TeamResponseDTO();
-        response.setName(team.getName());
-        response.setBadge(team.getBadge());
-        if (!team.getPlayers().isEmpty()) {
-            response.setPlayerInfo(team.getPlayers().stream().map(this::toPlayerInfoDTO).toList());
-        }
-        return response;
+        Team team = teamService.updateTeam(id, teamDTO.getName(), teamDTO.getBadge());
+        return teamMapper.toTeamResponseDTO(team);
     }
 
-    private PlayerInfoDTO toPlayerInfoDTO(Player player) {
-        PlayerInfoDTO dto = new PlayerInfoDTO();
-        dto.setUser(player.getUser());
-        dto.setScore(player.getScore());
-        return dto;
-    }
 }

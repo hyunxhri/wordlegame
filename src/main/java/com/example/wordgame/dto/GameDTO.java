@@ -4,16 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TeamResponseDTO {
+public class GameDTO {
 
-    private String name;
-    private String badge;
+    private String word;
     private int score;
-    private List<PlayerInfoDTO> playerInfo;
+    private int nTry;
+    private String playerName;
+    private String gameType;
 
 }

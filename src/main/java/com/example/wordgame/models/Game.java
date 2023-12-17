@@ -29,6 +29,7 @@ public class Game { // Partida
     private Player player;
 
     @OneToOne
+    @JoinColumn(name = "game_type_id")
     private GameType gameType;
 
 }

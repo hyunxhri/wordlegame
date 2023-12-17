@@ -9,11 +9,9 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TeamResponseDTO {
+public class GameListDTO {
 
-    private String name;
-    private String badge;
-    private int score;
-    private List<PlayerInfoDTO> playerInfo;
+    private List<GameDTO> gameList;
+    private Integer nextPage;
 
 }

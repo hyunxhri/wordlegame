@@ -23,7 +23,7 @@ public class GameType {
     private String description;
     private int maxTries; // Máximos intentos
 
-    @OneToOne
+    @OneToOne(mappedBy = "gameType")
     private Game game;
 
     @OneToMany(mappedBy = "gameType")
